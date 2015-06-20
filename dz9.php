@@ -1,6 +1,6 @@
 <?php
 
-/* dz9.php
+/* dz9.php mysqli
  * 
  Задание dz_8.php переделать с помощью хранения информации в БД
     Для категорий и городов сделать отдельные таблицы
@@ -54,25 +54,30 @@ $location_id='641780';
 $price='0';
 $amount_ads=0;
 $db_user='dz9';
+$db_pass='dz9';
 $db_name='dz9';
 $db_server='localhost';
 
 $mysql_last_id='';
 
+// mysqli 
+$conn = mysqli_connect(
+$db_server, $db_user,$db_pass, $db_name);
 
-$conn = mysql_connect(
-$db_server, $db_user,$db_user)
-or die("Невозможно установить соединение: ". mysql_error());
+if (!$conn) {
+printf("Невозможно подключиться к базе данных. Код ошибки: %s\n", mysqli_connect_error());
+exit; 
+}
 
-mysql_select_db($db_name);
-mysql_query('SET NAMES utf8');
+
+mysqli_query($conn,'SET NAMES utf8');
 
 
 $query='select * from cities order by id ASC';
 
-$result_query = mysql_query($query) or die('Запрос не удался');
+$result_query = mysqli_query($conn,$query) or die('Запрос не удался');
 
-while ($result = mysql_fetch_assoc($result_query)) {
+while ($result = mysqli_fetch_assoc($result_query)) {
     
     $cities[$result['city']]=$result['id'];
 }
@@ -85,9 +90,9 @@ $tube_station_id='';
 
 $query='select * from tube_stations order by tube_station ASC';
 
-$result_query = mysql_query($query) or die('Запрос не удался');
+$result_query = mysqli_query($conn,$query) or die('Запрос не удался');
 
-while ($result = mysql_fetch_assoc($result_query)) {
+while ($result = mysqli_fetch_assoc($result_query)) {
 $tube_stations[$result['tube_station']]=$result['id'];
 }
 
@@ -99,14 +104,14 @@ $category_id='';
 
 
 $query='select * from categories order by id ASC';
-$result_query = mysql_query($query) or die('Запрос не удался');
-while ($result = mysql_fetch_assoc($result_query)) {
+$result_query = mysqli_query($conn,$query) or die('Запрос не удался');
+while ($result = mysqli_fetch_assoc($result_query)) {
 
 $subquery='select * from subcategories where category='.$result['id'].' order by subcategory';
-$result_subquery = mysql_query($subquery) or die('Запрос не удался');
+$result_subquery = mysqli_query($conn,$subquery) or die('Запрос не удался');
 
 
-    while ($result2 = mysql_fetch_assoc($result_subquery)) {
+    while ($result2 = mysqli_fetch_assoc($result_subquery)) {
 
     $subcategory[$result2['subcategory']]=$result2['id'];
 
@@ -115,7 +120,7 @@ $result_subquery = mysql_query($subquery) or die('Запрос не удался
 $categories[$result['category']]=$subcategory;
 
 //обнуляем
-mysql_free_result($result_subquery);
+mysqli_free_result($result_subquery);
 $subcategory=array();
 
 
@@ -131,13 +136,13 @@ $subcategory=array();
 
 $query='select * from ads order by id ASC';
 
-$result_query = mysql_query($query) or die('Запрос из ads не удался');
+$result_query = mysqli_query($conn,$query) or die('Запрос из ads не удался');
 
-if ($result = mysql_fetch_assoc($result_query)) {
+if ($result = mysqli_fetch_assoc($result_query)) {
     
 $temp_array[]=$result;
 
-while ($result = mysql_fetch_assoc($result_query)) {
+while ($result = mysqli_fetch_assoc($result_query)) {
     $temp_array[]=$result;
     }
 }
@@ -180,20 +185,20 @@ if (isset($_POST['allow_mails'])) {
         '", send_to_email="'.$allow_mails.  
         '" WHERE id='.$_GET['id'].';';
         
-        $result_query = mysql_query($query) or die('Изменение не удалось');
+        $result_query = mysqli_query($conn,$query) or die('Изменение не удалось');
         
         // обновляем в temp_array
         
         $query='select * from ads where ads.id='.$_GET["id"].';';
 
-$result_query = mysql_query($query) or die('Получение измененного элемента не удалось');        
+$result_query = mysqli_query($conn,$query) or die('Получение измененного элемента не удалось');        
         
 
 foreach ($temp_array as $key => $value) {
         
         if ($temp_array[$key]['id']==$_GET["id"]) {
             
-            $temp_array[$key]=mysql_fetch_assoc($result_query);
+            $temp_array[$key]=mysqli_fetch_assoc($result_query);
             
         }
     }
@@ -215,7 +220,7 @@ if (isset($_GET["id"])) {
 
 $query='delete from ads where ads.id='.$_GET["id"].';';
 
-$result_query = mysql_query($query) or die('Удаление выбранного элемента не удалось');        
+$result_query = mysqli_query($conn,$query) or die('Удаление выбранного элемента не удалось');        
         
 
 foreach ($temp_array as $key => $value) {
@@ -321,16 +326,16 @@ if ($_POST['main_form']=='Добавить') {
         .$_POST['private'].'", "'.$allow_mails.'" );';
         
 
-        $result_query = mysql_query($query) or die('Вставка в ads не удалась');
+        $result_query = mysqli_query($conn,$query) or die('Вставка в ads не удалась');
         
         
         // добавляем к temp_array вставленное значение, для мгновенного отображения
         
         
-        $mysql_last_id=mysql_insert_id();
+        $mysql_last_id=mysqli_insert_id($conn);
         $query='SELECT * from ads WHERE id='.$mysql_last_id.';';
-        $result_query = mysql_query($query) or die('Запрос из ads последнего объявления не удался');
-        $temp_array[]= mysql_fetch_assoc($result_query); 
+        $result_query = mysqli_query($conn,$query) or die('Запрос из ads последнего объявления не удался');
+        $temp_array[]= mysqli_fetch_assoc($result_query); 
         
    
 
@@ -372,10 +377,10 @@ $smarty->assign('site_dir',$site_dir);
 
 $smarty->display($current_php_script.'.tpl');
 
-if (!is_bool($result_query)) {
-mysql_free_result($result_query);
-}
-mysql_close($conn);
+
+mysqli_free_result($result_query);
+
+mysqli_close($conn);
 
 ?>
 
