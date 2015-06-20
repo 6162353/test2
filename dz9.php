@@ -15,7 +15,12 @@
 
 $project_root=$_SERVER['DOCUMENT_ROOT'];
 
-$smarty_dir=$project_root.'/test/smarty/';
+$site_dir='/test2';
+
+$smarty_dir=$project_root.$site_dir.'/smarty/';
+
+
+
 
 // put full path to Smarty.class.php
 require($smarty_dir.'libs/Smarty.class.php');
@@ -200,7 +205,7 @@ $_POST=null;
     if ($_POST['form']=="Назад") {
 $_POST=null;
 unset($_GET);
-header('Location:/test/'.$current_php_script.'.php');
+header('Location:'.$site_dir.'/'.$current_php_script.'.php');
 }
 }
 
@@ -225,7 +230,7 @@ foreach ($temp_array as $key => $value) {
    
 
 unset($_GET["id"]);
-header('Location:/test/'.$current_php_script.'.php');
+header('Location:'.$site_dir.'/'.$current_php_script.'.php');
 
 
   
@@ -362,7 +367,7 @@ $smarty->assign('post_edit',$post_edit);
 $smarty->assign('amount_ads',$amount_ads);
 $smarty->assign('temp_array',$temp_array);
 $smarty->assign('current_php_script',$current_php_script);
-
+$smarty->assign('site_dir',$site_dir);
 
 
 $smarty->display($current_php_script.'.tpl');

@@ -1,4 +1,4 @@
-<?php /* Smarty version 2.6.28, created on 2015-06-07 23:56:38
+<?php /* Smarty version 2.6.28, created on 2015-06-20 21:21:52
          compiled from dz9.tpl */ ?>
 <!DOCTYPE HTML>
 <html>
@@ -238,7 +238,8 @@ class="vas-submit-input">
     foreach ($_from as $this->_tpl_vars['key5'] => $this->_tpl_vars['value5']):
 ?> 
     
-<p><a href=/test/<?php echo $this->_tpl_vars['current_php_script']; ?>
+<p><a href=<?php echo $this->_tpl_vars['site_dir']; ?>
+/<?php echo $this->_tpl_vars['current_php_script']; ?>
 .php?edit=1&id=<?php echo $this->_tpl_vars['temp_array'][$this->_tpl_vars['key5']]['id']; ?>
 ><?php echo $this->_tpl_vars['temp_array'][$this->_tpl_vars['key5']]['title']; ?>
 </a> | 
@@ -246,7 +247,8 @@ class="vas-submit-input">
  | 
         <?php echo $this->_tpl_vars['temp_array'][$this->_tpl_vars['key5']]['user_name']; ?>
  | 
-        <a href=/test/<?php echo $this->_tpl_vars['current_php_script']; ?>
+        <a href=<?php echo $this->_tpl_vars['site_dir']; ?>
+/<?php echo $this->_tpl_vars['current_php_script']; ?>
 .php?del=1&id=<?php echo $this->_tpl_vars['temp_array'][$this->_tpl_vars['key5']]['id']; ?>
 >Удалить</a></p>
 <?php endforeach; endif; unset($_from); ?>
