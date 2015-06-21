@@ -195,6 +195,7 @@ if (isset($_POST['form'])) {
 
 
         $_POST = null;
+        header('Location:' . $site_dir . '/' . $current_php_script . '.php');
     }
     if ($_POST['form'] == "Назад") {
         $_POST = null;
@@ -267,6 +268,8 @@ if (isset($_GET["id"])) {
                 $title = $value['title'];
                 $description = $value['descr'];
                 $price = $value['price'];
+                
+                
             }
         }
     }
