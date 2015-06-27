@@ -64,6 +64,8 @@ $db_server = 'localhost';
 
 $db = DbSimple_Generic::connect('mysqli://' . $db_user . ':' . $db_pass . '@' . $db_server . '/' . $db_name);
 
+
+
 $db->setErrorHandler('databaseErrorHandler');
 $db->setLogger('myLogger');
 
