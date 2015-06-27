@@ -1,13 +1,11 @@
 <?php
 
-/* 
+/*
  * Задание dz9.php (mysqli) переделать с помощью DbSimple, 
  * все запросы к БД должны выводиться отладочным механизмом через FirePHP 
  * и видны в консоли Firebug
  * 
  */
-
-$debug=0;
 
 
 $project_root = $_SERVER['DOCUMENT_ROOT'];
@@ -16,14 +14,14 @@ $site_dir = '/test2';
 
 $smarty_dir = $project_root . $site_dir . '/smarty/';
 
-require_once $project_root. $site_dir . '/dbsimple/lib/config.php';
-require_once $project_root. $site_dir . '/dbsimple/lib/DbSimple/Generic.php';
+require_once $project_root . $site_dir . '/dbsimple/lib/config.php';
+require_once $project_root . $site_dir . '/dbsimple/lib/DbSimple/Generic.php';
 
-require_once $project_root. $site_dir . '/FirePHPCore/FirePHP.class.php';
+require_once $project_root . $site_dir . '/FirePHPCore/FirePHP.class.php';
 
 $firePHP = FirePHP::getInstance(true);
 
-$firePHP -> setEnabled(true);
+$firePHP->setEnabled(true);
 
 
 
@@ -64,103 +62,86 @@ $db_name = 'dz9';
 $db_server = 'localhost';
 
 
-$db = DbSimple_Generic::connect('mysqli://' . $db_user . ':' . $db_pass . '@'. $db_server. '/'. $db_name);
+$db = DbSimple_Generic::connect('mysqli://' . $db_user . ':' . $db_pass . '@' . $db_server . '/' . $db_name);
 
 $db->setErrorHandler('databaseErrorHandler');
 $db->setLogger('myLogger');
 
-function databaseErrorHandler($message, $info)
-{
-    if (!error_reporting()) return;
-    echo "SQL Error: $message<br><pre>"; 
-    print_r($info); 
+function databaseErrorHandler($message, $info) {
+    if (!error_reporting())
+        return;
+    echo "SQL Error: $message<br><pre>";
+    print_r($info);
     echo "</pre>";
     exit();
 }
 
-
-function myLogger($db, $sql, $caller)
-{
+function myLogger($db, $sql, $caller) {
     global $firePHP;
-    global $result;
 
 
     if (isset($caller['file'])) {
-    
-    $firePHP->group("at ".@$caller['file'].' line '.@$caller['line']);
+
+        $firePHP->group("at " . @$caller['file'] . ' line ' . @$caller['line']);
     }
-    
+
     $firePHP->log($sql);
-    
-    
+
+
     if (isset($caller['file'])) {
-        
+
         $firePHP->groupEnd();
     }
-    
-}
-    
-
-$result= $db->select('select * from cities order by id ASC');
-
-
-foreach ($result as $value)  {
-    
-    $cities[$value['city']]=$value['id'];
-    
 }
 
-$firePHP->log($cities,'$cities');
-//var_dump($cities);
-    
+$result = $db->select('select * from cities order by id ASC');
+
+
+foreach ($result as $value) {
+
+    $cities[$value['city']] = $value['id'];
+}
+
+$firePHP->log($cities, '$cities');
 
 
 $tube_station_id = '';
 
 /* МЕТРО $tube_stations  */
 
-$result= $db->select('select * from tube_stations order by tube_station ASC');
+$result = $db->select('select * from tube_stations order by tube_station ASC');
 
-foreach ($result as $value)  {
-    
-    $tube_stations[$value['tube_station']]=$value['id'];
-    
+foreach ($result as $value) {
+
+    $tube_stations[$value['tube_station']] = $value['id'];
 }
 
-//var_dump($tube_stations);
 
-$firePHP->log($tube_stations,'$tube_stations');
+$firePHP->log($tube_stations, '$tube_stations');
 
 
 
 $category_id = '';
 
-$result= $db->select('select * from categories order by id ASC');
-$firePHP->log($result,'categories $result');
+$result = $db->select('select * from categories order by id ASC');
+$firePHP->log($result, 'categories $result');
 
-foreach ($result as $value)  {
-    
-    $result2= $db->select('select * from subcategories where category='.$value['id'].' order by subcategory');
-    $firePHP->log($result2,'subcategories $result2');
-    //var_dump($value['id']);
-    
-    //var_dump($result2);
-    
-    foreach ($result2 as $value2)  {
-        
-        $subcategory[$value2['subcategory']]=$value2['id'];
-        
+foreach ($result as $value) {
+
+    $result2 = $db->select('select * from subcategories where category=' . $value['id'] . ' order by subcategory');
+    $firePHP->log($result2, 'subcategories $result2');
+
+    foreach ($result2 as $value2) {
+
+        $subcategory[$value2['subcategory']] = $value2['id'];
     }
-    //var_dump($subcategory);
-    
-    $categories[$value['category']]=$subcategory;
-    $subcategory=array();
-    
 
-} 
 
-//var_dump($categories);
-$firePHP->log($categories,'$categories');
+    $categories[$value['category']] = $subcategory;
+    $subcategory = array();
+}
+
+$firePHP->log($categories, '$categories');
 
 /*
   через бд
@@ -168,20 +149,17 @@ $firePHP->log($categories,'$categories');
 
 // Получаем объявления из бд
 
-        
-if ($result= $db->select('select * from ads order by id ASC')) {
-    
-    $temp_array=$result;
-    }
 
-else {
+if ($result = $db->select('select * from ads order by id ASC')) {
 
-$temp_array=array();
+    $temp_array = $result;
+} else {
 
-        }
-    
-$firePHP->log($temp_array,'ads from db $temp_array');    
-//var_dump($temp_array);
+    $temp_array = array();
+}
+
+$firePHP->log($temp_array, 'ads from db $temp_array');
+
 
 
 if (isset($_POST['form'])) {
@@ -199,39 +177,28 @@ if (isset($_POST['form'])) {
 
         //Изменили значение
 
-        $db->query('UPDATE ads SET '.
-        'title=?, price=?, user_name=? , 
+        $db->query('UPDATE ads SET ' .
+                'title=?, price=?, user_name=? , 
         email=?, tel=?, descr=?,
         id_city=? , id_tube_station=? , id_subcategory=? ,
-        private=?, send_to_email=? WHERE id=?',
-        $_POST['title'], $_POST['price'], $_POST['seller_name'],
-        $_POST['email'], $_POST['phone'], $_POST['description'],
-        $_POST['location_id'], $_POST['metro_id'], $_POST['category_id'],
-        $_POST['private'], $allow_mails, $_GET['id']);
+        private=?, send_to_email=? WHERE id=?', $_POST['title'], $_POST['price'], $_POST['seller_name'], $_POST['email'], $_POST['phone'], $_POST['description'], $_POST['location_id'], $_POST['metro_id'], $_POST['category_id'], $_POST['private'], $allow_mails, $_GET['id']);
 
         // обновляем в temp_array
-        
-        $row=$db->selectRow('select * from ads where ads.id=?',$_GET["id"]);
-        
-        $firePHP -> log($row,'$row');    
-        
-        if ($debug) {
-        echo '<p>В изменении значения</p>';
-        echo '<b>$row=</b>';
-        var_dump($row);
-        
-        }
-        
+
+        $row = $db->selectRow('select * from ads where ads.id=?', $_GET["id"]);
+
+        $firePHP->log($row, '$row');
+
+
         foreach ($temp_array as $key => $value) {
-        
-        if ($temp_array[$key]['id']==$_GET["id"]) {
-            
-            $temp_array[$key]=$row;
-            
+
+            if ($temp_array[$key]['id'] == $_GET["id"]) {
+
+                $temp_array[$key] = $row;
+            }
         }
-    }
-    
-        $firePHP -> log($temp_array,'ads $temp_array'); 
+
+        $firePHP->log($temp_array, 'ads $temp_array');
 
 
 
@@ -249,7 +216,7 @@ if (isset($_POST['form'])) {
 if (isset($_GET["id"])) {
     if (isset($_GET["del"])) {
 
-$db->query('delete from ads where ads.id=?',$_GET["id"]);
+        $db->query('delete from ads where ads.id=?', $_GET["id"]);
 
         foreach ($temp_array as $key => $value) {
 
@@ -259,8 +226,8 @@ $db->query('delete from ads where ads.id=?',$_GET["id"]);
                 unset($temp_array[$key]);
             }
         }
-        
-        $firePHP->log($temp_array,'ads $temp_array'); 
+
+        $firePHP->log($temp_array, 'ads $temp_array');
 
 
         unset($_GET["id"]);
@@ -308,8 +275,6 @@ $db->query('delete from ads where ads.id=?',$_GET["id"]);
                 $title = $value['title'];
                 $description = $value['descr'];
                 $price = $value['price'];
-                
-                
             }
         }
     }
@@ -331,48 +296,25 @@ elseif (count($_POST)) {
             }
 
             //вставили значение
-            
-        $mysql_last_id=$db->query('INSERT into ads '.
-        '(title, price, user_name, email, tel, descr, id_city, '.
-        'id_tube_station, id_subcategory, private, send_to_email) '.
-        'VALUES (?, ?, ?,   ?, ?, ?,    ?, ?, ?,   ?, ? )' ,
-        $_POST['title'], $_POST['price'], $_POST['seller_name'],
-        $_POST['email'], $_POST['phone'], $_POST['description'], 
-        $_POST['location_id'], $_POST['metro_id'], $_POST['category_id'], 
-        $_POST['private'], $allow_mails);
+
+            $mysql_last_id = $db->query('INSERT into ads ' .
+                    '(title, price, user_name, email, tel, descr, id_city, ' .
+                    'id_tube_station, id_subcategory, private, send_to_email) ' .
+                    'VALUES (?, ?, ?,   ?, ?, ?,    ?, ?, ?,   ?, ? )', $_POST['title'], $_POST['price'], $_POST['seller_name'], $_POST['email'], $_POST['phone'], $_POST['description'], $_POST['location_id'], $_POST['metro_id'], $_POST['category_id'], $_POST['private'], $allow_mails);
 
             // добавляем к temp_array вставленное значение, для мгновенного отображения
 
-                if ($debug) {
-        
-        echo '<p><b>$mysql_last_id=</b>';
-        var_dump($mysql_last_id);
-        echo '</p>';
-        
-        }
-        $firePHP -> log($mysql_last_id,'$mysql_last_id'); 
-        
-        $row=$db->selectRow('SELECT * from ads WHERE id=?',$mysql_last_id);
-        
-        $firePHP -> log($row,'$row'); 
-        
-        if ($debug) {
-        
-        echo '<b>$row=</b>';
-        var_dump($row);
-        
-        }
-        
-         $temp_array[]= $row; 
-        
-         $firePHP -> log($temp_array,'ads $temp_array'); 
-        if ($debug) {
-        
-        echo '<b>ads $temp_array=</b>';
-        var_dump($temp_array);
-        
-        }
-        
+            $firePHP->log($mysql_last_id, '$mysql_last_id');
+
+            $row = $db->selectRow('SELECT * from ads WHERE id=?', $mysql_last_id);
+
+            $firePHP->log($row, '$row');
+
+
+            $temp_array[] = $row;
+
+            $firePHP->log($temp_array, 'ads $temp_array');
+
         }
     }
 }
@@ -410,8 +352,6 @@ $smarty->assign('site_dir', $site_dir);
 
 
 $smarty->display('dz9.tpl');
-
-
 ?>
 
 
